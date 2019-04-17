@@ -10,7 +10,6 @@ import util
 dir_path = os.path.dirname(os.path.realpath(__file__))
 UPLOAD_FOLDER = dir_path + '/dankmemes/'
 
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(dir_path, 'data.sqlite')
@@ -77,6 +76,7 @@ def getRandom():
     row = db.session.query(Memes)[rand]
     path = os.path.join(app.config['UPLOAD_FOLDER'], row.name)
     return render_template('homepage.html', image_file = path)
+    print path
 
 if __name__ == '__main__':
 	app.debug = True
