@@ -69,42 +69,8 @@ def upload_file():
         db.session.commit()
         rand = random.randrange(0, db.session.query(Memes).count())
         row = db.session.query(Memes)[rand]
-        path = os.path.join(app.config['UPLOAD_FOLDER'], row.name)
+        path = 'http://127.0.0.1:5000/dankmemes/' + row.name
         return render_template('homepage.html', image_file = path)
-
-<<<<<<< HEAD
-@app.route('/')
-def index():
-	db.drop_all()
-	db.create_all()
-	image1 = Memes(id = 1, name = '1.jpg', up = 0, down = 0)
-	image2 = Memes(id = 2, name = '2.jpg', up = 0, down = 0)
-	image3 = Memes(id = 3, name = '3.jpg', up = 0, down = 0)
-	image4 = Memes(id = 4, name = '4.jpg', up = 0, down = 0)
-	image5 = Memes(id = 5, name = '5.jpg', up = 0, down = 0)
-	image6 = Memes(id = 6, name = '6.jpg', up = 0, down = 0)
-	image7 = Memes(id = 7, name = '7.jpg', up = 0, down = 0)
-	image8 = Memes(id = 8, name = '8.jpg', up = 0, down = 0)
-	image9 = Memes(id = 9, name = '9.jpg', up = 0, down = 0)
-	image10 = Memes(id = 10, name = '10.jpg', up = 0, down = 0)
-	image11 = Memes(id = 11, name = '11.jpg', up = 0, down = 0)
-	image12 = Memes(id = 12, name = '12.jpg', up = 0, down = 0)
-	image13 = Memes(id = 13, name = '13.jpg', up = 0, down = 0)
-	image14 = Memes(id = 14, name = '14.jpg', up = 0, down = 0)
-	image15 = Memes(id = 15, name = '15.jpg', up = 0, down = 0)
-	db.session.add_all([image1, image2, image3, image4, image5, image6, image7, image8, image9, image10,
-	                    image11, image12, image13, image14, image15])
-	db.session.commit()
-
-@app.route('/')
-def getRandom():
-    rand = random.randrange(0, db.session.query(Memes).count())
-    row = db.session.query(Memes)[rand]
-    path = 'http://127.0.0.1:5000/dankmemes/' + row.name
-    return render_template('homepage.html', image_file = path)
-    print path
-=======
->>>>>>> 90aff5a213e548463d95fa2e06deaac5e971d1fa
 
 @app.route('/dankmemes/<filename>')
 def send_file(filename):
