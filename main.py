@@ -74,9 +74,13 @@ def index():
 def getRandom():
     rand = random.randrange(0, db.session.query(Memes).count())
     row = db.session.query(Memes)[rand]
-    path = os.path.join(app.config['UPLOAD_FOLDER'], row.name)
+    path = 'http://127.0.0.1:5000/dankmemes/' + row.name
     return render_template('homepage.html', image_file = path)
     print path
+
+@app.route('/dankmemes/<filename>')
+def send_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 if __name__ == '__main__':
 	app.debug = True
