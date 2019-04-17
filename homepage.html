@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
+    <link rel="stylesheet" href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'>
     <meta charset="UTF-8">
     <title>The Meme Graveyard</title>
 </head>
@@ -22,17 +23,40 @@
         display: block;
         margin-left: auto;
         margin-right: auto;
-        width: 50%;
-        height: 75%;
-        width: 50%;
+        width: 75%;
+        height: 90%;
     }
+
+    body {
+        height: 100%;
+        background-color: black;
+        overflow: hidden;
+    }
+
+    #Meme {
+        position: absolute;
+        height: 40%;
+        width: 40%;
+        top: 15%;
+        left: 33%;
+    }
+
 </style>
-<body bgcolor="black">
+<body>
 
 <h1> The Meme Graveyard </h1>
 
-<img src="https://www.pinclipart.com/picdir/big/13-139322_illustration-of-a-blank-tombstone-halloween-tombstone-png.png"
-     alt="Picture of Tombstone">
+<div class="row">
+    <div class="col-3"></div>
+        <div class="col-6">
+            <img src="https://www.pinclipart.com/picdir/big/13-139322_illustration-of-a-blank-tombstone-halloween-tombstone-png.png"
+            alt="Tombstone" style="position: relative">
+            <div id="Meme">
+                <img src="{{ image_file }}">
+            </div>
+        </div>
+    <div class="col-3"></div>
+</div>
 
 </body>
 </html>
