@@ -92,13 +92,13 @@
         </div>
     <div class="col-3">
 		<h1>Vote</h1>
-		<form method="post" action="">
+		<form method="post" action="{{ image_file }}/up">
 			<input type="hidden" name="upvote" value="1">
 			<input type="submit" class="btn btn-success" value="Pay Respects">  <div id="ups">{{ ups }}</div> People payed their respects.
 		</form>
 		<br>
 		<br>
-		<form method="post" action="">
+		<form method="post" action="{{ image_file }}/down">
 			<input type="hidden" name="downvote" value="0">
 			<div style="color: #d9534f">
 				<input type="submit" class="btn btn-danger" value="Spit On the Grave">  <div id="downs">{{ downs }}</div> People spat on the grave.

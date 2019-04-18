@@ -3,6 +3,7 @@ import os
 import random
 from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug import secure_filename
 import jinja2
 import util
 
@@ -23,7 +24,7 @@ db = SQLAlchemy(app)
 class Memes(db.Model):
     __tablename__ = 'memes'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True)
+    name = db.Column(db.String)
     up = db.Column(db.Integer)
     down = db.Column(db.Integer)
     def __repr__(self):
@@ -41,40 +42,51 @@ def upload_file():
             log = 'Empty filename.'
             return render_template('homepage.html', log = log)
         if file and util.allowed_file(file.filename):
-            filename = secure_filename(file.filename)
             if os.path.exists(app.config['UPLOAD_FOLDER']) == False:
                 os.makedirs(app.config['UPLOAD_FOLDER'])
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return render_template('homepage.html', filename=filename, column_names=column_names, data_part=data_part)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+            newimage = Memes(id = db.session.query(Memes).count() + 1, name = file.filename, up = 0, down = 0)
+            db.session.add_all([newimage])
+            db.session.commit()
+            path = 'http://127.0.0.1:5000/dankmemes/' + file.filename
+            return render_template('homepage.html', image_file = path, ups = 0, downs = 0)
     elif request.method == 'GET':
-        db.drop_all()
-        db.create_all()
-        image1 = Memes(id = 1, name = '1.jpg', up = 0, down = 0)
-        image2 = Memes(id = 2, name = '2.jpg', up = 0, down = 0)
-        image3 = Memes(id = 3, name = '3.jpg', up = 0, down = 0)
-        image4 = Memes(id = 4, name = '4.jpg', up = 0, down = 0)
-        image5 = Memes(id = 5, name = '5.jpg', up = 0, down = 0)
-        image6 = Memes(id = 6, name = '6.jpg', up = 0, down = 0)
-        image7 = Memes(id = 7, name = '7.jpg', up = 0, down = 0)
-        image8 = Memes(id = 8, name = '8.jpg', up = 0, down = 0)
-        image9 = Memes(id = 9, name = '9.jpg', up = 0, down = 0)
-        image10 = Memes(id = 10, name = '10.jpg', up = 0, down = 0)
-        image11 = Memes(id = 11, name = '11.jpg', up = 0, down = 0)
-        image12 = Memes(id = 12, name = '12.jpg', up = 0, down = 0)
-        image13 = Memes(id = 13, name = '13.jpg', up = 0, down = 0)
-        image14 = Memes(id = 14, name = '14.jpg', up = 0, down = 0)
-        image15 = Memes(id = 15, name = '15.jpg', up = 0, down = 0)
-        db.session.add_all([image1, image2, image3, image4, image5, image6, image7, image8, image9, image10,
-                            image11, image12, image13, image14, image15])
-        db.session.commit()
+        try:
+            db.connect()
+        except:
+            db.drop_all()
+            db.create_all()
+            memelist = os.listdir(app.config['UPLOAD_FOLDER'])
+            index = 0
+            for x in range(len(memelist)):
+                image = Memes(id = x, name = memelist[x], up = 0, down = 0)
+                index += 1
+                db.session.add(image)
+            db.session.commit()
         rand = random.randrange(0, db.session.query(Memes).count())
         row = db.session.query(Memes)[rand]
         path = 'http://127.0.0.1:5000/dankmemes/' + row.name
-        return render_template('homepage.html', image_file = path)
+        return render_template('homepage.html', image_file = path, ups = row.up, downs = row.down)
 
 @app.route('/dankmemes/<filename>')
 def send_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+@app.route('/dankmemes/<filename>/up', methods=['POST'])
+def send_up(filename):
+    meme=Memes.query.filter_by(name=filename).first()
+    meme.up += 1
+    db.session.commit()
+    path = 'http://127.0.0.1:5000/dankmemes/' + filename
+    return render_template('homepage.html', image_file = path, ups = meme.up, downs = meme.down)
+
+@app.route('/dankmemes/<filename>/down', methods=['POST'])
+def send_down(filename):
+    meme=Memes.query.filter_by(name=filename).first()
+    meme.down += 1
+    db.session.commit()
+    path = 'http://127.0.0.1:5000/dankmemes/' + filename
+    return render_template('homepage.html', image_file = path, ups = meme.up, downs = meme.down)
 
 if __name__ == '__main__':
     app.debug = True
