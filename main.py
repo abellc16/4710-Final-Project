@@ -3,7 +3,7 @@ import os
 import random
 from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug import secure_filename
+from sqlalchemy_utils import database_exists
 import jinja2
 import util
 
@@ -51,9 +51,7 @@ def upload_file():
             path = 'http://127.0.0.1:5000/dankmemes/' + file.filename
             return render_template('homepage.html', image_file = path, ups = 0, downs = 0)
     elif request.method == 'GET':
-        try:
-            db.connect()
-        except:
+        if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
             db.drop_all()
             db.create_all()
             memelist = os.listdir(app.config['UPLOAD_FOLDER'])
