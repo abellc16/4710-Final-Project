@@ -4,6 +4,7 @@ import random
 from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists
+from datetime import datetime
 import jinja2
 import util
 
@@ -27,6 +28,7 @@ class Memes(db.Model):
     name = db.Column(db.String)
     up = db.Column(db.Integer)
     down = db.Column(db.Integer)
+    date = db.Column(db.DateTime)
     def __repr__(self):
         return '<Memes %r>' % self.name
 
@@ -45,7 +47,7 @@ def upload_file():
             if os.path.exists(app.config['UPLOAD_FOLDER']) == False:
                 os.makedirs(app.config['UPLOAD_FOLDER'])
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
-            newimage = Memes(id = db.session.query(Memes).count() + 1, name = file.filename, up = 0, down = 0)
+            newimage = Memes(id = db.session.query(Memes).count() + 1, name = file.filename, up = 0, down = 0, date = datetime.now())
             db.session.add_all([newimage])
             db.session.commit()
             path = 'http://127.0.0.1:5000/dankmemes/' + file.filename
@@ -57,14 +59,14 @@ def upload_file():
             memelist = os.listdir(app.config['UPLOAD_FOLDER'])
             index = 0
             for x in range(len(memelist)):
-                image = Memes(id = x, name = memelist[x], up = 0, down = 0)
+                image = Memes(id = x, name = memelist[x], up = 0, down = 0, date = datetime.now())
                 index += 1
                 db.session.add(image)
             db.session.commit()
         rand = random.randrange(0, db.session.query(Memes).count())
         row = db.session.query(Memes)[rand]
         path = 'http://127.0.0.1:5000/dankmemes/' + row.name
-        return render_template('homepage.html', image_file = path, ups = row.up, downs = row.down)
+        return render_template('homepage.html', image_file = path, ups = row.up, downs = row.down, date = row.date)
 
 @app.route('/dankmemes/<filename>')
 def send_file(filename):
@@ -76,7 +78,7 @@ def send_up(filename):
     meme.up += 1
     db.session.commit()
     path = 'http://127.0.0.1:5000/dankmemes/' + filename
-    return render_template('homepage.html', image_file = path, ups = meme.up, downs = meme.down)
+    return render_template('homepage.html', image_file = path, ups = meme.up, downs = meme.down, date = meme.date)
 
 @app.route('/dankmemes/<filename>/down', methods=['POST'])
 def send_down(filename):
@@ -84,7 +86,7 @@ def send_down(filename):
     meme.down += 1
     db.session.commit()
     path = 'http://127.0.0.1:5000/dankmemes/' + filename
-    return render_template('homepage.html', image_file = path, ups = meme.up, downs = meme.down)
+    return render_template('homepage.html', image_file = path, ups = meme.up, downs = meme.down, date = meme.date)
 
 if __name__ == '__main__':
     app.debug = True
