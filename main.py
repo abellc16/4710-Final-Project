@@ -51,7 +51,7 @@ def upload_file():
             db.session.add_all([newimage])
             db.session.commit()
             path = 'http://127.0.0.1:5000/dankmemes/' + file.filename
-            return render_template('homepage.html', image_file = path, ups = 0, downs = 0)
+            return render_template('homepage.html', image_file = path, ups = 0, downs = 0 date = datetime.now())
     elif request.method == 'GET':
         if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
             db.drop_all()
